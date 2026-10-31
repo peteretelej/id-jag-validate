@@ -42,7 +42,7 @@ export const rules: RuleDescriptor[] = [
     params: { values: ["RS256", "ES256"] },
     fail: "invalid_grant",
     summary:
-      "RS256 is mandatory to implement and the header algorithm MUST match the supplied key; the engine also accepts ES256 and rejects alg none and every other value as rule outcomes.",
+      "RS256 is mandatory to implement for both authorization servers (Section 5 of RFC 7523), and the Resource AS SHOULD also support ES256; the engine accepts exactly RS256 and ES256 and rejects alg none and every other value as rule outcomes.",
   },
   {
     id: "structure-signature",
@@ -159,6 +159,7 @@ export const rules: RuleDescriptor[] = [
     params: {
       claim: "aud",
       contextField: "expectedAudience",
+      deferBrokenShape: true,
       label: "this Resource Authorization Server's issuer identifier",
       requirement:
         "the RAS MUST reject the ID-JAG with invalid_grant unless aud carries its own issuer identifier; supply the expected audience to decide this rule.",
@@ -542,7 +543,7 @@ export const rules: RuleDescriptor[] = [
     check: "requirement",
     params: {
       requirement:
-        "A refresh-token subject token MUST be validated the same way as a standard refresh_token grant (issued by the IdP, bound to the authenticated client, unexpired, not revoked); the engine does not see the exchange request.",
+        "A refresh-token subject token MUST be validated the same way as a standard refresh_token grant: issued by the IdP, bound to the authenticated client, unexpired, not revoked, and not restricted by the IdP from the requested audience, resources, or scopes; the engine does not see the exchange request.",
     },
     fail: "external",
     summary: "Refresh-token subject tokens get standard refresh-grant validation at the IdP.",

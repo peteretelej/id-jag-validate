@@ -78,7 +78,8 @@ export const rules: RuleDescriptor[] = [
     check: "claimShape",
     params: { claim: "resource", shape: "stringOrNonEmptyUniqueStringArray" },
     fail: "invalid_grant",
-    summary: "When present, resource is a string or a non-empty JSON array of unique strings (RFC 8707 resource identifiers).",
+    summary:
+      "When present, resource carries the RFC 8707 Resource Identifier of the Resource Server as a single URI or an array of URIs; the engine additionally requires array entries to be non-empty unique strings.",
   },
   {
     id: "claims-authorization-details-shape",
@@ -148,6 +149,7 @@ export const rules: RuleDescriptor[] = [
     params: {
       claim: "aud",
       contextField: "expectedAudience",
+      deferBrokenShape: true,
       label: "this Resource Authorization Server's issuer identifier",
       requirement:
         "the RAS MUST reject the ID-JAG with invalid_grant unless aud carries its own issuer identifier; supply the expected audience to decide this rule.",
@@ -161,17 +163,17 @@ export const rules: RuleDescriptor[] = [
     revision: "-04",
     family: "semantics",
     keyword: "MUST",
-    cite: "Section 4.4.1",
+    cite: "RFC 7521 Section 5.2; Section 2.1",
     check: "claimEqualsContext",
     params: {
       claim: "iss",
       contextField: "expectedIssuer",
       label: "a trusted IdP Authorization Server issuer identifier",
       requirement:
-        "the RAS MUST reject the ID-JAG with invalid_grant if iss does not identify an IdP Authorization Server it trusts; supply the trusted issuer to decide this rule.",
+        "the assertion's Issuer identifies the entity that issued it as recognized by the authorization server (RFC 7521 Section 5.2, imported at Section 4.4.1), and Section 2.1 casts the IdP as the issuer the RAS already trusts for SSO and subject resolution; supply the trusted issuer to decide this rule (the explicit reject-untrusted-iss MUST enters with -05).",
     },
     fail: "invalid_grant",
-    summary: "The RAS MUST reject the ID-JAG with invalid_grant if iss does not identify an IdP Authorization Server it trusts.",
+    summary: "The assertion's Issuer must be recognized by the authorization server: the engine checks iss against the trusted issuer the host supplies (-04 states the trust; the explicit rejection enters with -05).",
   },
   {
     id: "semantics-client-continuity",
@@ -238,10 +240,10 @@ export const rules: RuleDescriptor[] = [
     check: "requirement",
     params: {
       requirement:
-        "When the RAS is multi-tenant the IdP MUST include the tenant claim, and the RAS MUST reject the ID-JAG with invalid_grant unless it trusts iss and tenant together; the engine does not know whether a deployment is multi-tenant, so this needs deployment input.",
+        "When the Resource Authorization Server is multi-tenant the IdP MUST include the tenant claim in the ID-JAG to ensure proper subject-identifier scoping (Section 6.3); whether the deployment is multi-tenant, and the RAS-side iss+tenant trust, is deployment input the engine does not take (the explicit iss+tenant trust-rejection clause enters with -05).",
     },
     fail: "external",
-    summary: "When the RAS is multi-tenant the IdP MUST include the tenant claim; needs deployment input.",
+    summary: "When the RAS is multi-tenant the IdP MUST include the tenant claim (Section 6.3); needs deployment input.",
   },
   {
     id: "semantics-client-id-cimd",
@@ -494,7 +496,7 @@ export const rules: RuleDescriptor[] = [
     check: "requirement",
     params: {
       requirement:
-        "A refresh-token subject token gets standard refresh-grant validation at the IdP (issued by the IdP, bound to the authenticated client, unexpired, not revoked); the engine does not see the exchange request.",
+        "A refresh-token subject token MUST be validated the same way as a standard refresh_token grant at the token endpoint: the token is issued by the IdP, bound to the authenticated client, unexpired, not revoked, and the requested scopes and audience remain within the authorization context of the Refresh Token; the engine does not see the exchange request.",
     },
     fail: "external",
     summary: "Refresh-token subject tokens get standard refresh-grant validation at the IdP.",

@@ -78,7 +78,8 @@ async function evaluateRule(rule: RuleDescriptor, input: CheckInput): Promise<Ve
  */
 export async function validateToken(token: string, context: ValidationContext = {}): Promise<TokenValidationResult> {
   const revision: Revision = context.revision ?? defaultRevision;
-  const now = context.now ?? Date.now();
+  // NumericDate claims are seconds; the default evaluation time must be too.
+  const now = context.now ?? Math.floor(Date.now() / 1000);
   let parsed: ParsedToken;
   try {
     parsed = parseToken(token);
@@ -108,7 +109,7 @@ export async function validateMetadata(
 ): Promise<MetadataValidationResult> {
   const revision: Revision = context.revision ?? defaultRevision;
   const kind = context.kind ?? "ras";
-  const base: CheckInput = { token: null, document: metadata, params: {}, context: { ...context, kind }, now: context.now ?? Date.now() };
+  const base: CheckInput = { token: null, document: metadata, params: {}, context: { ...context, kind }, now: context.now ?? Math.floor(Date.now() / 1000) };
   const verdicts: Verdict[] = [];
   for (const rule of getRuleset(revision)) {
     if (rule.family !== "metadata") continue;

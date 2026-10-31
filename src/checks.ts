@@ -118,9 +118,11 @@ const claimShape: Check = (input) => {
 };
 
 // Value equality against the context. When the claim's shape itself is broken
-// (e.g. a multi-element aud), this check defers so exactly one rule row
-// carries the failure. Without the expected context value the rule is
-// undecidable, not failed.
+// (e.g. a multi-element aud) and the descriptor opts in via deferBrokenShape
+// (aud is the only context-matched claim with a shape rule), this check defers
+// so exactly one rule row carries the failure. Well-shaped but wrong values,
+// and claims without a paired shape rule, fail here. Without the expected
+// context value the rule is undecidable, not failed.
 const claimEqualsContext: Check = (input) => {
   const claimName = input.params.claim as string;
   const contextField = input.params.contextField as keyof ValidationContext;
@@ -135,7 +137,8 @@ const claimEqualsContext: Check = (input) => {
   }
   const comparable = Array.isArray(value) && value.length === 1 ? value[0] : value;
   if (comparable === expected) return { ok: true };
-  if (Array.isArray(value)) {
+  const shapeBroken = Array.isArray(value) && (value.length !== 1 || typeof value[0] !== "string");
+  if (shapeBroken && input.params.deferBrokenShape === true) {
     return { ok: true, note: `"${claimName}" shape is invalid; the shape rule carries this failure.` };
   }
   return {
@@ -206,7 +209,10 @@ const subIdFormat: Check = (input) => {
   const known = [...required, ...optional];
   const unknownMembers = Object.keys(record).filter((member) => !known.includes(member));
   if (unknownMembers.length > 0) {
-    return { ok: false, message: `sub_id carries members outside the ${formatValue} format: ${unknownMembers.join(", ")}.` };
+    return {
+      ok: false,
+      message: `sub_id carries members outside the ${formatValue} format: ${unknownMembers.map((member) => JSON.stringify(member)).join(", ")}.`,
+    };
   }
   return { ok: true };
 };

@@ -13,7 +13,8 @@ Usage:
 
   Pass the compact-serialized ID-JAG as an argument, or pipe it through
   stdin (pass "-" to read stdin explicitly). With --metadata the input is
-  an AS metadata document instead of a JWT.
+  an AS metadata document instead of a JWT, validated as a Resource
+  Authorization Server advertisement.
 
 Options:
   --json              Print machine-readable JSON (the full validation result)
@@ -28,8 +29,9 @@ Options:
   -h, --help          Show this help
 
 Exit codes:
-  0  no rejection-grade failures
-  1  one or more invalid_grant-grade rule failures
+  0  evaluated, no rejection-grade failures
+  1  one or more invalid_grant-grade rule failures, or a rule the engine
+     could not evaluate (error)
   2  usage, parse, or unreadable-input error`;
 
 const TAGS: Record<VerdictStatus, string> = {

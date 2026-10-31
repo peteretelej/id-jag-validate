@@ -9,7 +9,8 @@ as a library and as a CLI.
 
 ## What it validates
 
-Version-pinned rule sets for the two current draft revisions:
+Version-pinned rule sets for draft revisions -04 and -05 (draft -06, published
+2026-10-31, is tracked as a future delta):
 
 - `-04`: 39 rules
 - `-05`: 46 rules (default)
@@ -28,7 +29,9 @@ Verdict statuses:
 - `informational`: advisory outcome (for example a RECOMMENDED claim that is absent)
 - `external`: the rule needs Resource-Server-side or IdP-side state a single
   token cannot carry, so the verdict states the requirement instead
-- `error`: the check could not run (for example malformed key material)
+- `error`: the check could not run (an internal failure); malformed key
+  material is not an error - it surfaces as an `invalid_grant` signature
+  verdict whose message names the key problem
 
 ## Install
 
@@ -126,8 +129,8 @@ id-jag-validate validate --metadata < metadata.json
 
 | Code | Meaning |
 |------|---------|
-| `0` | No rejection-grade failures |
-| `1` | One or more `invalid_grant`-grade rule failures |
+| `0` | Evaluated, no rejection-grade failures |
+| `1` | One or more `invalid_grant`-grade rule failures, or a rule the engine could not evaluate (`error`) |
 | `2` | Usage, parse, or unreadable-input error |
 
 ### CI example
@@ -149,7 +152,10 @@ steps:
 
 The step fails when the token has rejection-grade failures (exit 1);
 input problems surface distinctly as exit 2. Add `--json` and pipe
-through `jq` when you need per-rule results in the job summary.
+through `jq` when you need per-rule results in the job summary. One
+limit to know: the CLI has no signing-key input, so the signature rule
+renders `external` and never affects the exit code - cryptographic
+verification happens through the library API with `key` supplied.
 
 ## License
 
