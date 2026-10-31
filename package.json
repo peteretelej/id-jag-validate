@@ -1,16 +1,37 @@
 {
   "name": "id-jag-validate",
-  "version": "0.0.1",
-  "description": "ID-JAG (Identity and Authorization Assertion Grant) token validation per draft-ietf-oauth-id-jag - name reservation, work in progress",
+  "version": "0.1.0",
+  "description": "Rule-by-rule validation for OAuth Identity Assertion JWT Authorization Grant (ID-JAG) tokens per draft-ietf-oauth-identity-assertion-authz-grant, with section citations.",
   "type": "module",
   "license": "MIT",
-  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/peteretelej/id-jag-validate.git"
+  },
+  "engines": {
+    "node": ">=20.19"
+  },
+  "bin": {
+    "id-jag-validate": "dist/src/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": "./dist/src/validate.js",
+    "./crypto": "./dist/src/crypto.js",
+    "./fixtures": "./dist/src/fixtures.js",
+    "./mint": "./dist/src/mint.js",
+    "./rules": "./dist/src/rules/index.js",
+    "./types": "./dist/src/types.js"
+  },
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "devDependencies": {
+    "@types/node": "^26.6.6",
     "@vitest/browser-playwright": "^5.0.5",
     "playwright": "^1.64.1",
     "typescript": "^7.0.2",

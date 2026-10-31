@@ -1,0 +1,44 @@
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Assert npm supports trusted publishing (>= 11.5.1)
+        run: |
+          npm --version
+          node -e '
+            const got = process.argv[1].split(".").map(Number);
+            const need = [11, 5, 1];
+            const ok = got[0] !== need[0] ? got[0] > need[0]
+              : got[1] !== need[1] ? got[1] > need[1]
+              : (got[2] || 0) >= need[2];
+            if (!ok) {
+              console.error("npm " + process.argv[1] + " is too old for trusted publishing; npm >= 11.5.1 is required (bundled with Node 24).");
+              process.exit(1);
+            }
+          ' "$(npm --version)"
+
+      - run: npm ci
+      - run: npm run build
+      - run: npx vitest run
+
+      - name: Publish to npm (tag pushes only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: npm publish --provenance

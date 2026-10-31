@@ -15,6 +15,8 @@ export default defineConfig({
         test: {
           name: "browser",
           include: ["test/**/*.test.ts"],
+          // The CLI suite spawns node child processes; that is node-only.
+          exclude: ["test/cli.test.ts"],
           browser: {
             enabled: true,
             provider: playwright(),
