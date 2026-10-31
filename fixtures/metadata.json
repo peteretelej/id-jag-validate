@@ -1,0 +1,32 @@
+{
+  "positive": {
+    "id": "metadata-ras-well-formed",
+    "description": "A well-formed RAS advertisement: id-jag profile advertised with jwt-bearer in grant_types_supported.",
+    "kind": "ras",
+    "document": {
+      "issuer": "https://acme.chat.example/",
+      "grant_types_supported": [
+        "urn:ietf:params:oauth:grant-type:authorization_code",
+        "urn:ietf:params:oauth:grant-type:jwt-bearer"
+      ],
+      "authorization_grant_profiles_supported": [
+        "urn:ietf:params:oauth:grant-profile:id-jag"
+      ]
+    }
+  },
+  "negative": {
+    "id": "metadata-ras-coupling",
+    "description": "The id-jag profile is advertised without jwt-bearer in grant_types_supported; the coupling rule.",
+    "kind": "ras",
+    "targetRuleId": "metadata-ras-coupling",
+    "document": {
+      "issuer": "https://acme.chat.example/",
+      "grant_types_supported": [
+        "urn:ietf:params:oauth:grant-type:authorization_code"
+      ],
+      "authorization_grant_profiles_supported": [
+        "urn:ietf:params:oauth:grant-profile:id-jag"
+      ]
+    }
+  }
+}
