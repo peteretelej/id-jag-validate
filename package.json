@@ -1,6 +1,6 @@
 {
   "name": "id-jag-validate",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Rule-by-rule validation for OAuth Identity Assertion JWT Authorization Grant (ID-JAG) tokens per draft-ietf-oauth-identity-assertion-authz-grant, with section citations.",
   "type": "module",
   "license": "MIT",
