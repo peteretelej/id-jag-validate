@@ -11,7 +11,7 @@ as a library and as a CLI.
 
 Version-pinned rule sets for the two current draft revisions:
 
-- `-04`: 40 rules
+- `-04`: 39 rules
 - `-05`: 46 rules (default)
 
 Token validation covers the structure, claims, semantics, sub_id, and
