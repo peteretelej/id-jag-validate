@@ -44,3 +44,9 @@ jobs:
       - name: Publish to npm (tag pushes only)
         if: startsWith(github.ref, 'refs/tags/v')
         run: npm publish --provenance
+
+      - name: Create GitHub release (tag pushes only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes

@@ -1,5 +1,9 @@
 # id-jag-validate
 
+[![CI](https://github.com/peteretelej/id-jag-validate/actions/workflows/release.yml/badge.svg)](https://github.com/peteretelej/id-jag-validate/actions/workflows/release.yml)
+[![npm](https://img.shields.io/npm/v/id-jag-validate)](https://www.npmjs.com/package/id-jag-validate)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
 Rule-by-rule validation for OAuth **ID-JAG** (Identity Assertion JWT
 Authorization Grant) tokens per
 `draft-ietf-oauth-identity-assertion-authz-grant`. Every rule returns a
